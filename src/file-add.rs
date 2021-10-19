@@ -1,4 +1,6 @@
 pub mod encode {
+
+    // todo :使用してないuseなどを消す
     use std::fs;
     use std::io;
     use std::path::PathBuf;
