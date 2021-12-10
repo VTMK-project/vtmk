@@ -1,9 +1,8 @@
-use fileadd::encode;
-fn main() -> Result<(), std::io::Error> {
-    let ank = encode::Zstds {
-        levels: 3,
-        source: "D:\\vtmk\\test\\test.txt",
-    };
+mod zipping;
+pub use uuid as vtmk_uuid;
+pub use zipping::*;
+mod reading;
 
-    ank.zstd_use()
+fn main() {
+    println!("test!")
 }
