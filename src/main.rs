@@ -1,7 +1,9 @@
 mod zipping;
-pub use uuid as vtmk_uuid;
+
 pub use zipping::*;
+
 mod reading;
+mod uuid;
 
 fn main() {
     println!("test!")
