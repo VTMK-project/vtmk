@@ -1,5 +1,5 @@
 pub mod zipping {
-    use zstd_safe::{compress, max_c_level, CompressionLevel, SafeResult};
+    use zstd_safe::{max_c_level, CompressionLevel, SafeResult, WriteBuf};
 
     /// File extension after compression
     pub const EXTENSION: &'static str = ".vlog";
@@ -24,15 +24,37 @@ pub mod zipping {
         }
     }
 
+    struct ZstdCompress {}
+
     pub trait Compress {
-        fn new(&self);
-        fn compress(&self, config: ZstdConfig) -> SafeResult;
+        fn parse_code(code: usize) -> SafeResult;
+
+        fn compress<C: WriteBuf + ?Sized>(
+            &mut self,
+            content: String,
+            config: ZstdConfig,
+        ) -> SafeResult;
     }
 
-    impl dyn Compress {
-        fn new(&self) {}
-        fn compress(&self, config: ZstdConfig) -> SafeResult {
-            todo!()
+    impl Compress for ZstdCompress {
+        /// Function to parse code and distinguish if it is an error
+        fn parse_code(code: usize) -> SafeResult {
+            if !unsafe { zstd_sys::ZSTD_isError(code) != 0 } {
+                Ok(code)
+            } else {
+                Err(code)
+            }
+        }
+
+        /// Function to compress the content
+        fn compress<C: WriteBuf + ?Sized>(
+            &mut self,
+            content: String,
+            config: ZstdConfig,
+        ) -> SafeResult {
+            let mut buffer: [u8; 256] = [0; 256];
+            let code = zstd_safe::compress(&mut buffer, content.as_bytes(), config.levels);
+            code
         }
     }
 }

@@ -10,27 +10,23 @@ args:
       long: version
 subcommands:
   - assoc:
-      takes_value: true
       args:
         - directory:
             short: d
             long: dir
 
   - commit:
-      takes_value: true
       args:
         - release:
             short: r
             long: release
   - name:
-      takes_value: true
       args:
         - namechange:
             short: nc
             long: name-change
 
   - remote:
-      takes_value: true
       args:
         - query:
             short: q
@@ -40,27 +36,22 @@ subcommands:
         - remove:
             long: remove
   - remote-remove:
-      takes_value: true
 
   - remote-add:
-      takes_value: true
       args:
         - release:
             short: r
             long: release
 
   - search:
-      takes_value: true
 
   - clone:
-      takes_value: true
       args: 
         - release:
             short: r
             long: release
 
   - tag:
-      takes_value: true
       args:
         - add:
             long: add
@@ -70,14 +61,12 @@ subcommands:
             long: list
   
   - config:
-      takes_value: true
       args:
         - global:
             short: g
             long: global 
 
   - group:
-      takes_value: true
       args:
         - list:
             short: l
