@@ -1,5 +1,8 @@
 pub mod zipping {
-    use zstd_safe::{max_c_level, CompressionLevel, SafeResult, WriteBuf};
+    use zstd_safe::{
+        compress_using_cdict, create_cdict, max_c_level, CCtx, CDict, CompressionLevel, SafeResult,
+        WriteBuf,
+    };
 
     /// File extension after compression
     pub const EXTENSION: &'static str = ".vlog";
@@ -29,11 +32,15 @@ pub mod zipping {
     pub trait Compress {
         fn parse_code(code: usize) -> SafeResult;
 
-        fn compress<C: WriteBuf + ?Sized>(
-            &mut self,
+        fn compress<C: WriteBuf + ?Sized>(content: String, config: ZstdConfig) -> SafeResult;
+
+        fn compress_using_dict(
+            cctx: &mut CCtx<'_>,
             content: String,
-            config: ZstdConfig,
+            dict_file: &CDict<'_>,
         ) -> SafeResult;
+
+        fn create_dict(dict_buffer: &[u8], config: ZstdConfig) -> CDict<'static>;
     }
 
     impl Compress for ZstdCompress {
@@ -47,14 +54,25 @@ pub mod zipping {
         }
 
         /// Function to compress the content
-        fn compress<C: WriteBuf + ?Sized>(
-            &mut self,
-            content: String,
-            config: ZstdConfig,
-        ) -> SafeResult {
-            let mut buffer: [u8; 256] = [0; 256];
+        fn compress<C: WriteBuf + ?Sized>(content: String, config: ZstdConfig) -> SafeResult {
+            let mut buffer: [u8; 255] = [0; 255];
             let code = zstd_safe::compress(&mut buffer, content.as_bytes(), config.levels);
             code
+        }
+
+        /// Function to compress the content using a dictionary
+        fn compress_using_dict(
+            cctx: &mut CCtx<'_>,
+            content: String,
+            dict_file: &CDict<'_>,
+        ) -> SafeResult {
+            let mut buffer: [u8; 255] = [0; 255];
+            compress_using_cdict(cctx, &mut buffer, content.as_bytes(), dict_file)
+        }
+
+        /// Function to create a dictionary
+        fn create_dict(dict_buffer: &[u8], config: ZstdConfig) -> CDict<'static> {
+            create_cdict(dict_buffer, config.levels)
         }
     }
 }
