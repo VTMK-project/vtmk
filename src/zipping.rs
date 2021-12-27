@@ -4,6 +4,8 @@ pub mod zipping {
         WriteBuf,
     };
 
+    use crate::reading::FileInfo;
+
     /// File extension after compression
     pub const EXTENSION: &'static str = ".vlog";
 
@@ -27,7 +29,7 @@ pub mod zipping {
         }
     }
 
-    struct ZstdCompress {}
+    pub struct ZstdCompress {}
 
     pub trait Compress {
         fn parse_code(code: usize) -> SafeResult;
@@ -41,6 +43,8 @@ pub mod zipping {
         ) -> SafeResult;
 
         fn create_dict(dict_buffer: &[u8], config: ZstdConfig) -> CDict<'static>;
+
+        fn new(config: ZstdConfig, files: FileInfo) -> anyhow::Result<()>;
     }
 
     impl Compress for ZstdCompress {
@@ -73,6 +77,14 @@ pub mod zipping {
         /// Function to create a dictionary
         fn create_dict(dict_buffer: &[u8], config: ZstdConfig) -> CDict<'static> {
             create_cdict(dict_buffer, config.levels)
+        }
+
+        fn new(config: ZstdConfig,files: FileInfo) -> anyhow::Result<()> {
+           if config.make_dictionary_file == true {
+                let dictionary = Self::create_dict(todo!(),config);
+           } else {
+                
+           } 
         }
     }
 }

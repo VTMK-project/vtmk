@@ -18,4 +18,4 @@ zstd-safe = "4.1.1+zstd.1.5.0"
 zstd-sys = "1.6.1+zstd.1.5.0"
 uuid = { version = "0.8.2", features = ["serde","v4"] }
 clap = { version = "3.0.0-beta.5", features = ["yaml","env","color","suggestions","unicode"] }
-
+anyhow = "1.0.51"

@@ -33,6 +33,19 @@ impl FileInfo {
             println!("{:?}", file_iter);
         }
     }
+
+    /// Returns the Directory and Path
+    pub fn dict_and_path_vec(&self) {
+        if let Some(dir) = &self.directory {
+            let mut dir_path = &dir;
+            let file_path = self.files;
+
+            for i in 0..=self.take_file_vec_len() {
+                dir_path.push(file_path[i].as_path());
+            }
+
+        }
+    }
 }
 
 struct Fileread {}
