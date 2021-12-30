@@ -3,8 +3,10 @@ pub mod zipping {
         compress_using_cdict, create_cdict, max_c_level, CCtx, CDict, CompressionLevel, SafeResult,
         WriteBuf,
     };
+    use std::fs::File;
+    use std::path::PathBuf;
 
-    use crate::reading::FileInfo;
+    use crate::reading::{FileInfo,Fileread};
 
     /// File extension after compression
     pub const EXTENSION: &'static str = ".vlog";
@@ -44,7 +46,7 @@ pub mod zipping {
 
         fn create_dict(dict_buffer: &[u8], config: ZstdConfig) -> CDict<'static>;
 
-        fn new(config: ZstdConfig, files: FileInfo) -> anyhow::Result<()>;
+        fn new(config: ZstdConfig, files: PathBuf, compress_file_name: String) -> anyhow::Result<File>;
     }
 
     impl Compress for ZstdCompress {
@@ -79,11 +81,23 @@ pub mod zipping {
             create_cdict(dict_buffer, config.levels)
         }
 
-        fn new(config: ZstdConfig,files: FileInfo) -> anyhow::Result<()> {
-           if config.make_dictionary_file == true {
-                let dictionary = Self::create_dict(todo!(),config);
+
+        fn new(config: ZstdConfig,files: PathBuf,compress_file_name: String) -> anyhow::Result<File> {
+            if config.make_dictionary_file == true {
+                let file_content = Fileread::read_file(files);
+                let dictionary = Self::create_dict(file_content.as_bytes(),config);
+                let cctx = zstd_safe::CCtx::create();
+                let compress = Self::compress_using_dict(&mut cctx,file_content,&dictionary);
+                let file_full_name = compress_file_name+&EXTENSION.to_string();
+                let mut writefile = match compress {
+                    Ok(content) => match File::create(file_full_name.as_ref()) {
+                        Ok(file) => todo!(),
+                        Err(why) => todo!()
+                    },
+                    Err(err_code) => todo!()
+                };
            } else {
-                
+               todo!() 
            } 
         }
     }

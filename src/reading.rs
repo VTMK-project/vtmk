@@ -1,5 +1,6 @@
 use std::fs::read_to_string;
 use std::path::PathBuf;
+use std::io::Write;
 
 /// Information about the file to be compressed
 pub struct FileInfo {
@@ -48,12 +49,19 @@ impl FileInfo {
     }
 }
 
-struct Fileread {}
+pub struct Fileread {}
 
 impl Fileread {
     /// Reads the file and returns the contents
     pub fn read_file(path: PathBuf) -> String {
-        let contents = read_to_string(path).expect("Error reading file");
-        contents
+        read_to_string(path).expect("Error reading file")
+    }
+}
+
+pub struct FileWrite {}
+
+impl FileWrite {
+    pub fn write_file<T: AsRef<u8>>(&mut self,content:T) -> () {
+        Write::write_all(content.as_ref());
     }
 }
